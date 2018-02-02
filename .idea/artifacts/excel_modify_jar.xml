@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="excel_modify:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/excel_modify_jar</output-path>
+    <root id="archive" name="excel_modify.jar">
+      <element id="module-output" name="excel_modify" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/junit-4.12.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/log4j-1.2.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/curvesapi-1.04.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-ooxml-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/xmlbeans-2.6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/javafx-2017.12.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-examples-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-excelant-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/commons-codec-1.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/commons-logging-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-scratchpad-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/poi-ooxml-schemas-3.17.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/commons-collections4-4.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/tally2other/jar/commons-collections4-4.1.jar" path-in-jar="/" />
+      <element id="library" level="project" name="jar" />
+      <element id="dir-copy" path="C:/Program Files/Java/jre1.8.0_144" />
+    </root>
+  </artifact>
+</component>
