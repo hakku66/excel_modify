@@ -14,6 +14,7 @@ public class RowObject {
         this.city = rowValue.getCity();
         this.state = "Kerala";
         this.state_Code = "32";
+        this.unitValue=rowValue.getunitValue();
         this.itemName = rowValue.getItemName();
         this.hsc_sac = rowValue.getHsc_sac();
         this.cess_p = rowValue.getCess_p();
@@ -38,6 +39,7 @@ public class RowObject {
     String state_Code= "32";
     String itemName;
     String hsc_sac;
+    String unitValue;
     double cess_p;
     double cess;
     double integrated_gst_p;
@@ -60,6 +62,12 @@ public class RowObject {
     }
     public void setParty_name(String party_name) {
         this.party_name = party_name;
+    }
+    public String getunitValue() {
+        return unitValue;
+    }
+    public void setunitValue(String unitValue) {
+        this.unitValue = unitValue;
     }
     public String getVch_no() {
         return vch_no;
