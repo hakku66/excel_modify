@@ -52,11 +52,17 @@ public class RowObject {
     double state_gst_p;
     double state_gst;
     double gross_Total;
+    short quantity_unit;
 
     public Date getDate() {
         return date;
     }
-
+    public short getQuantity_unit() {
+        return quantity_unit;
+    }
+    public void setQuantity_unit(short quantity_unit) {
+        this.quantity_unit = quantity_unit;
+    }
     public String getParty_name() {
         return party_name;
     }
@@ -200,10 +206,4 @@ public class RowObject {
         this.date = dateCellValue;
 
     }
-
-
-
-
-
-
 }
