@@ -1,5 +1,13 @@
 package back_end;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,117 +16,77 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-
 import java.util.List;
-
-
-
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 public class SimpleExcelReaderExample {
     List<RowObject> newExcelData = new ArrayList<RowObject>();
     String sheetname;
 
     public  void readfromExcel(String filename) throws IOException {
         // String excelFilePath = "C:\\Users\\ahake\\Desktop\\tally2other\\DayBook.xlsx";
-        FileInputStream inputStream = new FileInputStream(new File(filename));
+        try (FileInputStream inputStream = new FileInputStream(new File(filename))) {
 
 
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet firstSheet = workbook.getSheetAt(0);
+            sheetname = firstSheet.getSheetName();
+            RowObject newRowData = new RowObject();
+            boolean process_data = false;
+            int rowcount = 0;
+            for (Row row : firstSheet) {
+                // For each Row.
+                Cell cell = row.getCell(0); // Get the Cell at the Index / Column you want.
+                Cell cell1 = row.getCell(7); // Get the Cell at the Index / Column you want.
+                //System.out.println(rowcount + "cell  " + cell.toString()+"  cell1 "+cell1.toString());
+                rowcount++;
+                if (cell.getCellType() == Cell.CELL_TYPE_STRING && cell.getStringCellValue() == "Date") {
 
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet firstSheet = workbook.getSheetAt(0);
-        sheetname=firstSheet.getSheetName();
-        RowObject newRowData = new RowObject();
-        boolean process_data = false;
-        int rowcount=0;
-        for (Row row : firstSheet) {
-            // For each Row.
-            Cell cell = row.getCell(0); // Get the Cell at the Index / Column you want.
-            Cell cell1 = row.getCell(7); // Get the Cell at the Index / Column you want.
-            //System.out.println(rowcount + "cell  " + cell.toString()+"  cell1 "+cell1.toString());
-            rowcount++;
-            if(cell.getCellType() == Cell.CELL_TYPE_STRING && cell.getStringCellValue()=="Date"){
+
+                } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+
+                    newRowData.setDate(cell.getDateCellValue());
+                    newRowData.setParty_name(row.getCell(1).getStringCellValue());
+                    newRowData.setCity(row.getCell(2).getStringCellValue());
+                    newRowData.setVch_no(row.getCell(5).getStringCellValue());
+                    newRowData.setGstn_uin(row.getCell(8).getStringCellValue());
+                    process_data = true;
+                } else if ((cell.getCellType() == Cell.CELL_TYPE_BLANK && !cell1.toString().isEmpty()) && process_data == true) {
+
+                    DecimalFormat f = new DecimalFormat("##.00");
+
+                    newRowData.setItemName(row.getCell(1).getStringCellValue());
+                    newRowData.setHsc_sac(row.getCell(6).getStringCellValue());
+                    newRowData.setQuantity(row.getCell(9).getNumericCellValue());
+                    short unit = row.getCell(9).getCellStyle().getDataFormat();
+                    newRowData.setQuantity_unit(unit);
+
+                    String[] strArray = row.getCell(9).getCellStyle().getDataFormatString().split("\"");
+                    newRowData.setunitValue(strArray[strArray.length -1]);
+
+                    newRowData.setRate(row.getCell(10).getNumericCellValue());
+
+                    newRowData.setValue(Double.parseDouble(f.format(newRowData.getQuantity() * newRowData.getRate())));
+
+                    if (row.getCell(7).getCellType() == Cell.CELL_TYPE_STRING) {
+                        newRowData.setCentral_gst_p(Double.parseDouble((row.getCell(7).getStringCellValue().replace("%", " ").trim())) / 2);
+                    } else {
+                        newRowData.setCentral_gst_p((row.getCell(7).getNumericCellValue()) / 2);
+                    }
+
+                    newRowData.setState_gst_p(newRowData.getCentral_gst_p());
+                    newRowData.setCentral_gst(Double.parseDouble(f.format((newRowData.getCentral_gst_p() / 100) * newRowData.getValue())));
+                    newRowData.setState_gst(newRowData.getCentral_gst());
+                    newRowData.setGross_Total(newRowData.getValue() + (newRowData.getCentral_gst() * 2));
+                    //	    	  System.out.println(newRowData);
+                    newExcelData.add(new RowObject(newRowData));
+                }
 
 
             }
-            else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-
-                newRowData.setDate(cell.getDateCellValue());
-                newRowData.setParty_name(row.getCell(1).getStringCellValue());
-                newRowData.setCity(row.getCell(2).getStringCellValue());
-                newRowData.setVch_no(row.getCell(4).getStringCellValue());
-                newRowData.setGstn_uin(row.getCell(5).getStringCellValue());
-                process_data = true;
-            } else if ((cell.getCellType() == Cell.CELL_TYPE_BLANK && !cell1.toString().isEmpty()) && process_data == true) {
-
-                DecimalFormat f = new DecimalFormat("##.00");
-
-                newRowData.setItemName(row.getCell(1).getStringCellValue());
-                newRowData.setHsc_sac(row.getCell(7).getStringCellValue());
-                newRowData.setQuantity(row.getCell(8).getNumericCellValue());
-                int unit=row.getCell(8).getCellStyle( ).getDataFormat( );
-                String unitString=null;
-                System.out.println("row number "+rowcount+" ... unit no is "+unit);
-                switch (unit){
-                    case 166: unitString="KG"; break;
-                    case 169: unitString="KG"; break;
-                    case 171: unitString="nos";break;
-                    case 172: unitString="nos";break;
-                    case 173: unitString="sheet";break;
-                    case 174: unitString="sheet";break;
-                    case 175: unitString="Packet";break;
-                    case 184: unitString="Packet";break;
-                    case 177: unitString="Liter";break;
-                    case 178: unitString="Liter";break;
-                    case 179: unitString="Roll";break;
-                    case 180: unitString="Roll";break;
-                    case 181: unitString="BOX";break;
-                    case 182: unitString="BOX";break;
-                    case 183: unitString="Meter";break;
-                    case 176: unitString="Meter";break;
-                    case 185: unitString="SqFt";break;
-                    case 186: unitString="SqFt";break;
-                    default:
-                            unitString="no value";
-                }
-                newRowData.setunitValue(unitString);
-
-                newRowData.setRate(row.getCell(9).getNumericCellValue());
-                
-                newRowData.setValue(Double.parseDouble(f.format(newRowData.getQuantity() * newRowData.getRate())));
-
-                if(row.getCell(6).getCellType()==Cell.CELL_TYPE_STRING) {
-                    newRowData.setCentral_gst_p(Double.parseDouble((row.getCell(6).getStringCellValue().replace("%", " ").trim())) / 2);
-                }else{
-                    newRowData.setCentral_gst_p((row.getCell(6).getNumericCellValue()) / 2);
-                }
-
-                newRowData.setState_gst_p(newRowData.getCentral_gst_p());
-                newRowData.setCentral_gst(Double.parseDouble(f.format((newRowData.getCentral_gst_p() / 100) * newRowData.getValue())));
-                newRowData.setState_gst(newRowData.getCentral_gst());
-                newRowData.setGross_Total(newRowData.getValue() +(newRowData.getCentral_gst()*2) );
-                //	    	  System.out.println(newRowData);
-                newExcelData.add(new RowObject(newRowData));
-            }
 
 
+            workbook.close();
+            inputStream.close();
         }
-
-
-        workbook.close();
-        inputStream.close();
     }
     public boolean writetoExcel(String filename) throws IOException {
 
@@ -128,6 +96,7 @@ public class SimpleExcelReaderExample {
 
 
         CellStyle cellStyle = workbook1.createCellStyle();
+        CellStyle cellStyle1 = workbook1.createCellStyle();
         CreationHelper createHelper = workbook1.getCreationHelper();
         // Set the date format of date
         cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd/MM/yyyy"));
@@ -144,7 +113,7 @@ public class SimpleExcelReaderExample {
         for (RowObject rowData : newExcelData) {
             row = sheet.createRow(rowCount++);
 
-            writetoExcelrow(rowData, row,cellStyle);
+            writetoExcelrow(rowData, row, cellStyle1, cellStyle);
         }
         row= sheet.createRow(rowCount);
         XSSFCellStyle style = workbook1.createCellStyle();
@@ -204,7 +173,7 @@ public class SimpleExcelReaderExample {
         return true;
     }
 
-    public  void writetoExcelrow(RowObject rowdata,Row row ,CellStyle cellStyle){
+    public void writetoExcelrow(RowObject rowdata, Row row, CellStyle cellStyle1, CellStyle cellStyle) {
         Cell cell = row.createCell(0);
 
         cell.setCellValue(rowdata.getDate());
@@ -227,6 +196,8 @@ public class SimpleExcelReaderExample {
 
         cell = row.createCell(6);
         cell.setCellValue(rowdata.getQuantity());
+        cellStyle1.setDataFormat(rowdata.getQuantity_unit());
+        cell.setCellStyle(cellStyle1);
 
         cell = row.createCell(7);
         cell.setCellValue(rowdata.getunitValue());
