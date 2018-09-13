@@ -2,6 +2,7 @@ package back_end;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -38,10 +39,10 @@ public class SimpleExcelReaderExample {
                 Cell cell1 = row.getCell(7); // Get the Cell at the Index / Column you want.
                 //System.out.println(rowcount + "cell  " + cell.toString()+"  cell1 "+cell1.toString());
                 rowcount++;
-                if (cell.getCellType() == Cell.CELL_TYPE_STRING && cell.getStringCellValue() == "Date") {
+                if (cell.getCellType() == CellType.STRING && cell.getStringCellValue() == "Date") {
 
 
-                } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+                } else if (cell.getCellType() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 
                     newRowData.setDate(cell.getDateCellValue());
                     newRowData.setParty_name(row.getCell(1).getStringCellValue());
@@ -49,7 +50,7 @@ public class SimpleExcelReaderExample {
                     newRowData.setVch_no(row.getCell(5).getStringCellValue());
                     newRowData.setGstn_uin(row.getCell(8).getStringCellValue());
                     process_data = true;
-                } else if ((cell.getCellType() == Cell.CELL_TYPE_BLANK && !cell1.toString().isEmpty()) && process_data == true) {
+                } else if ((cell.getCellType() == CellType.BLANK && !cell1.toString().isEmpty()) && process_data == true) {
 
                     DecimalFormat f = new DecimalFormat("##.00");
 
@@ -66,7 +67,7 @@ public class SimpleExcelReaderExample {
 
                     newRowData.setValue(Double.parseDouble(f.format(newRowData.getQuantity() * newRowData.getRate())));
 
-                    if (row.getCell(7).getCellType() == Cell.CELL_TYPE_STRING) {
+                    if (row.getCell(7).getCellType() == CellType.STRING) {
                         newRowData.setCentral_gst_p(Double.parseDouble((row.getCell(7).getStringCellValue().replace("%", " ").trim())) / 2);
                     } else {
                         newRowData.setCentral_gst_p((row.getCell(7).getNumericCellValue()) / 2);
@@ -125,7 +126,7 @@ public class SimpleExcelReaderExample {
         style.setFont(font);
         Cell cell = row.createCell(21);
         String formula= "SUM(V2:V"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
 
@@ -135,31 +136,31 @@ public class SimpleExcelReaderExample {
 
         cell=row.createCell(12);
         formula= "SUM(M2:M"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
 
         cell=row.createCell(14);
         formula= "SUM(O2:O"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
 
         cell=row.createCell(16);
         formula= "SUM(Q2:Q"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
 
         cell=row.createCell(18);
         formula= "SUM(S2:S"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
 
         cell=row.createCell(20);
         formula= "SUM(U2:U"+(rowCount)+")";
-        cell.setCellType(HSSFCell.CELL_TYPE_FORMULA);
+        cell.setCellType(CellType.FORMULA);
         cell.setCellFormula(formula);
         cell.setCellStyle(style);
         sheet.createFreezePane(0,1);
