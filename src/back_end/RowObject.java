@@ -53,6 +53,7 @@ public class RowObject {
     double state_gst;
     double gross_Total;
     short quantity_unit;
+    
 
     public Date getDate() {
         return date;
