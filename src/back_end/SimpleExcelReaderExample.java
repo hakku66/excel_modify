@@ -32,13 +32,14 @@ public class SimpleExcelReaderExample {
             sheetname = firstSheet.getSheetName();
             RowObject newRowData = new RowObject();
             boolean process_data = false;
-            int rowcount = 0;
+            boolean cessneeded=true;
+          
             for (Row row : firstSheet) {
                 // For each Row.
                 Cell cell = row.getCell(0); // Get the Cell at the Index / Column you want.
-                Cell cell1 = row.getCell(7); // Get the Cell at the Index / Column you want.
-                //System.out.println(rowcount + "cell  " + cell.toString()+"  cell1 "+cell1.toString());
-                rowcount++;
+                Cell cell1 = row.getCell(6); // Get the Cell at the Index / Column you want.
+             ;
+                
                 if (cell.getCellType() == CellType.STRING && cell.getStringCellValue() == "Date") {
 
 
@@ -47,37 +48,50 @@ public class SimpleExcelReaderExample {
                     newRowData.setDate(cell.getDateCellValue());
                     newRowData.setParty_name(row.getCell(1).getStringCellValue());
                     newRowData.setCity(row.getCell(2).getStringCellValue());
-                    newRowData.setVch_no(row.getCell(5).getStringCellValue());
-                    newRowData.setGstn_uin(row.getCell(8).getStringCellValue());
+                    newRowData.setVch_no(row.getCell(4).getStringCellValue());
+                    newRowData.setGstn_uin(row.getCell(7).getStringCellValue());
+                    cessneeded=true;
+                    Cell c = row.getCell(15);
+                    if (c.toString().isEmpty()  || c.getCellType() ==  CellType.BLANK  ) {
+                    	cessneeded=false;
+                    }
+                   
                     process_data = true;
-                } else if ((cell.getCellType() == CellType.BLANK && !cell1.toString().isEmpty()) && process_data == true) {
+                } else if ((cell.getCellType() == CellType.BLANK && !cell1.toString().isEmpty()) &&  process_data== true) {
 
                     DecimalFormat f = new DecimalFormat("##.00");
 
                     newRowData.setItemName(row.getCell(1).getStringCellValue());
-                    newRowData.setHsc_sac(row.getCell(6).getStringCellValue());
-                    newRowData.setQuantity(row.getCell(9).getNumericCellValue());
-                    short unit = row.getCell(9).getCellStyle().getDataFormat();
+                    newRowData.setHsc_sac(row.getCell(5).getStringCellValue());
+                    newRowData.setQuantity(row.getCell(8).getNumericCellValue());
+                    short unit = row.getCell(8).getCellStyle().getDataFormat();
                     newRowData.setQuantity_unit(unit);
 
-                    String[] strArray = row.getCell(9).getCellStyle().getDataFormatString().split("\"");
+                    String[] strArray = row.getCell(8).getCellStyle().getDataFormatString().split("\"");
                     newRowData.setunitValue(strArray[strArray.length -1]);
 
-                    newRowData.setRate(row.getCell(10).getNumericCellValue());
+                    newRowData.setRate(row.getCell(9).getNumericCellValue());
 
                     newRowData.setValue(Double.parseDouble(f.format(newRowData.getQuantity() * newRowData.getRate())));
 
-                    if (row.getCell(7).getCellType() == CellType.STRING) {
-                        newRowData.setCentral_gst_p(Double.parseDouble((row.getCell(7).getStringCellValue().replace("%", " ").trim())) / 2);
+                    if (row.getCell(6).getCellType() == CellType.STRING) {
+                        newRowData.setCentral_gst_p(Double.parseDouble((row.getCell(6).getStringCellValue().replace("%", " ").trim())) / 2);
                     } else {
-                        newRowData.setCentral_gst_p((row.getCell(7).getNumericCellValue()) / 2);
+                        newRowData.setCentral_gst_p((row.getCell(6).getNumericCellValue()) / 2);
                     }
 
                     newRowData.setState_gst_p(newRowData.getCentral_gst_p());
                     newRowData.setCentral_gst(Double.parseDouble(f.format((newRowData.getCentral_gst_p() / 100) * newRowData.getValue())));
                     newRowData.setState_gst(newRowData.getCentral_gst());
-                    newRowData.setGross_Total(newRowData.getValue() + (newRowData.getCentral_gst() * 2));
-                    //	    	  System.out.println(newRowData);
+                    if(cessneeded) {
+                    newRowData.setCess_p(1);
+                    newRowData.setCess(Double.parseDouble(f.format((newRowData.getValue()/100))));
+                    }else {
+                    	newRowData.setCess_p(0);
+                    	newRowData.setCess(0);
+                    }
+                    newRowData.setGross_Total(newRowData.getValue() + (newRowData.getCentral_gst() * 2) + newRowData.getCess());
+                    	    	  System.out.println(newRowData);
                     newExcelData.add(new RowObject(newRowData));
                 }
 
@@ -102,7 +116,7 @@ public class SimpleExcelReaderExample {
         // Set the date format of date
         cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd/MM/yyyy"));
         List<Object>  cellHeader= new ArrayList<Object>();
-        cellHeader.addAll(Collections.unmodifiableList(Arrays.asList("Date","Particulars","Vch No.","ItemName","GSTIN/UIN","HSC/SAC","Quantity","Unit","City","State","State Code","Rate","Value","CGST%","CGST","SGST%","SGST","IGST%","IGSTA","CESS%","CESS","Gross Total")));
+        cellHeader.addAll(Collections.unmodifiableList(Arrays.asList("Date","Particulars","Vch No.","ItemName","GSTIN/UIN","HSC/SAC","Quantity","Unit","City","State","State Code","Rate","Value","CGST%","CGST","SGST%","SGST","IGST%","IGSTA","KFCESS%","KFCESS","Gross Total")));
 
         int rowCount = 1;
         int columnCount=0;
